@@ -74,19 +74,27 @@ body{
 }
 .step.minus,.step.plus{background:#f5f8fc;color:#075fd0}
 .step.value{border-top:1px solid #b6c5d8;border-bottom:1px solid #b6c5d8;font-size:30px;cursor:default}
+.step-input{border:0;border-radius:0;background:#fff;text-align:center;font-family:inherit;font-weight:700;color:#101d3b;outline:none;padding:0 4px;appearance:textfield;-moz-appearance:textfield}
+.step-input::-webkit-outer-spin-button,.step-input::-webkit-inner-spin-button{margin:0;-webkit-appearance:none}
 .determine{
   display:block;margin:28px auto 24px;width:min(390px,90%);height:68px;
   border:0;border-radius:13px;background:#096ee0;color:#fff;
   font-size:25px;font-weight:800;cursor:pointer;
 }
-.result{
-  display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:center;
+.wc-chart-card{
+  margin:12px 0 8px;padding:18px 4px 8px;
 }
-.result-text{font-size:25px;font-weight:800;line-height:1.15}
-.result-box{
-  height:90px;border:3px solid #619de1;border-radius:12px;background:#eaf4ff;
-  display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:800;
-}
+.wc-chart-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+.wc-chart-head span{font-size:16px;font-weight:900;letter-spacing:1.2px;color:#6f7f95}
+.wc-chart-head strong{min-width:92px;text-align:center;padding:8px 14px;border:2px solid #63a5df;border-radius:12px;background:#eef7ff;color:#10244b;font-size:27px;line-height:1}
+.wc-bar-wrap{position:relative;padding:0 4px}
+.wc-bar-track{position:relative;height:24px;border-radius:999px;background:linear-gradient(90deg,#dcecf8 0%,#b9ddf2 45%,#f1cf9a 75%,#df8e82 100%);box-shadow:inset 0 1px 3px rgba(20,45,75,.18);overflow:visible}
+.wc-bar-track::after{content:"";position:absolute;inset:0;border-radius:999px;border:1px solid rgba(255,255,255,.65);pointer-events:none}
+.wc-bar-fill{position:absolute;left:0;top:0;height:24px;width:0%;border-radius:999px;background:linear-gradient(90deg,#1475dc,#6552df);opacity:.82;transition:width .35s ease}
+.wc-marker{position:absolute;left:0%;top:50%;width:16px;height:16px;border-radius:50%;background:#fff;border:4px solid #624ee0;box-shadow:0 2px 7px rgba(33,51,93,.28);transform:translate(-50%,-50%);transition:left .35s ease;z-index:2}
+.wc-ticks{display:flex;justify-content:space-between;margin-top:9px;color:#738198;font-size:12px;font-weight:800}
+.wc-scale-note{text-align:center;margin-top:10px;color:#8190a3;font-size:11px;font-weight:700}
+.result-box{display:none}
 .bottom{margin-bottom:18px;padding:28px 22px}
 .ratio-title{font-size:25px;font-weight:800;text-align:center;margin-bottom:14px}
 .ratios{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -99,9 +107,8 @@ body{
   .materials{gap:8px}
   .mat h3{font-size:18px}
   .step{height:58px}
-  .result{grid-template-columns:1fr .8fr}
-  .result-text{font-size:21px}
-  .result-box{height:75px;font-size:38px}
+  .wc-chart-head span{font-size:13px}
+  .wc-chart-head strong{font-size:23px;min-width:78px}
 }
 
 .grade-result{
@@ -911,6 +918,226 @@ body::after{
   pointer-events:none;
 }
 
+
+/* MATERIAL COUNTERS — force all three materials to stay visible */
+.materials{
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  gap:10px !important;
+  width:100% !important;
+  margin-top:2px !important;
+}
+.materials .mat{
+  flex:1 1 0 !important;
+  min-width:0 !important;
+  width:0 !important;
+  text-align:center !important;
+}
+.materials .mat h3{
+  margin:0 0 8px !important;
+  white-space:nowrap !important;
+  font-size:16px !important;
+}
+.materials .stepper{
+  width:100% !important;
+  overflow:hidden !important;
+}
+.materials .step{
+  height:46px !important;
+  min-height:46px !important;
+  font-size:28px !important;
+}
+.materials .step-input{
+  width:100% !important;
+  height:46px !important;
+  min-width:0 !important;
+  font-size:25px !important;
+}
+@media(max-width:360px){
+  .materials{gap:6px !important}
+  .materials .mat h3{font-size:14px !important}
+  .materials .step{height:42px !important;min-height:42px !important}
+  .materials .step-input{height:42px !important;font-size:22px !important}
+}
+
+
+/* =========================================================
+   REDESIGN V1 — Modern Civil Engineering Field App
+   Functionality intentionally unchanged; visual layer only.
+   ========================================================= */
+:root{
+  --ink:#12233f;
+  --muted:#68788f;
+  --blue:#1268d8;
+  --blue2:#0b4fa8;
+  --cyan:#10a8d8;
+  --violet:#7156e8;
+  --orange:#ed8b2f;
+  --green:#1c9a68;
+  --line:#dce6f1;
+  --panel:rgba(255,255,255,.88);
+}
+body{
+  background:#eaf0f6 !important;
+}
+body::before{opacity:.12 !important}
+body::after{
+  background:linear-gradient(180deg,rgba(238,244,249,.72),rgba(238,244,249,.88) 52%,rgba(238,244,249,.94)) !important;
+}
+.app{
+  width:min(100%,600px) !important;
+  background:rgba(239,244,249,.38) !important;
+}
+.header{
+  min-height:148px !important;
+  padding:22px 20px 20px !important;
+  background:linear-gradient(135deg,#092f68 0%,#0c5db9 48%,#6c4de0 100%) !important;
+  border-bottom:0 !important;
+  box-shadow:0 8px 24px rgba(13,60,115,.22);
+}
+.header-brand{gap:13px !important;align-items:flex-start !important}
+.brand-logo{width:48px !important;height:48px !important;flex-basis:48px !important;margin-top:2px}
+.header-title{font-size:27px !important;letter-spacing:-.3px !important;line-height:1.02 !important}
+.header-subtitle{font-size:11px !important;letter-spacing:1.5px !important;margin-top:9px !important}
+.header-graphic{opacity:.20 !important;right:-26px !important;top:-34px !important}
+.header::after{
+  content:"FIELD CALCULATOR";
+  position:absolute;left:20px;bottom:14px;
+  padding:5px 9px;border:1px solid rgba(255,255,255,.25);
+  border-radius:999px;color:rgba(255,255,255,.82);
+  font-size:9px;font-weight:800;letter-spacing:1.2px;
+  background:rgba(255,255,255,.08);
+}
+.tool-strip{
+  padding:10px 12px !important;gap:7px !important;
+  background:rgba(255,255,255,.90) !important;
+  border-bottom:1px solid #dce5ef !important;
+}
+.tool-chip{min-height:50px !important;border-radius:12px !important}
+.tool-icon{font-size:18px !important}
+.section{
+  margin:12px 12px 0 !important;
+  padding:18px 16px !important;
+  border:1px solid #d6e2ee !important;
+  border-radius:18px !important;
+  background:var(--panel) !important;
+  box-shadow:0 7px 22px rgba(23,55,91,.09) !important;
+}
+.section::before{width:3px !important;border-radius:3px !important}
+.site-row{
+  grid-template-columns:1fr 1.35fr !important;
+  gap:10px !important;
+  margin-bottom:10px !important;
+  padding:7px !important;
+  background:#f7faff !important;
+  border:1px solid #e5edf5;
+}
+.site-row label{font-size:15px !important;font-weight:800 !important}
+.field-emoji{width:29px !important;height:29px !important;flex-basis:29px !important;font-size:18px !important;border-radius:9px !important}
+.input,.unit-select{height:52px !important;border-radius:12px !important;border:1.5px solid #cbd9e8 !important;background:#fff !important;font-size:16px !important}
+.input:focus,.unit-select:focus,.step-input:focus{
+  border-color:#4e95e4 !important;box-shadow:0 0 0 3px rgba(18,104,216,.10) !important;
+}
+.water{
+  margin-top:11px !important;padding:11px 7px 2px !important;
+  display:grid !important;grid-template-columns:1fr 1fr !important;gap:9px !important;
+}
+.water .label{grid-column:1/-1 !important;font-size:15px !important;font-weight:800 !important}
+.water-icon{margin-right:5px}
+.mix-section{padding-top:16px !important}
+.cement-weight-row{
+  margin:0 0 16px !important;padding:13px !important;
+  grid-template-columns:1.25fr .75fr .55fr !important;
+  border:1px solid #ded5fa !important;border-radius:14px !important;
+  background:linear-gradient(135deg,#f8f6ff,#fff) !important;
+}
+.cement-weight-label{font-size:16px !important}
+.cement-weight-input{height:48px !important;font-size:18px !important}
+.cement-weight-unit{font-size:15px !important}
+.units-note{font-size:14px !important;margin:0 0 12px !important;letter-spacing:.8px !important}
+.section-icon-row{margin-bottom:2px}
+.materials{gap:8px !important}
+.materials .mat{background:#f9fbfd;border:1px solid #e0e8f1;border-radius:14px;padding:9px 6px 7px;box-shadow:0 3px 10px rgba(26,62,100,.045)}
+.materials .mat:nth-child(1){border-top:3px solid #66727e}
+.materials .mat:nth-child(2){border-top:3px solid #e0a23c}
+.materials .mat:nth-child(3){border-top:3px solid #687b8f}
+.materials .mat h3{font-size:13px !important;margin:0 0 7px !important;color:#30425b}
+.materials .stepper{border:1px solid #c9d6e4 !important;border-radius:10px !important;box-shadow:none !important}
+.materials .step{height:39px !important;min-height:39px !important;font-size:23px !important}
+.materials .step.minus,.materials .step.plus{background:#f1f6fb !important;color:#1465c7 !important}
+.materials .step.value{border-top:1px solid #d8e1eb !important;border-bottom:1px solid #d8e1eb !important;background:#fff !important}
+.materials .step-input{height:39px !important;font-size:19px !important}
+.determine{
+  width:100% !important;height:58px !important;margin:18px auto 14px !important;
+  border-radius:14px !important;font-size:18px !important;letter-spacing:.5px !important;
+  background:linear-gradient(100deg,#0d67d5,#7255e7) !important;
+  box-shadow:0 8px 18px rgba(60,82,204,.22) !important;
+}
+.result-meter{margin:-1px 0 0 !important;opacity:.7}
+.result{
+  display:grid !important;grid-template-columns:1fr 112px !important;gap:12px !important;
+  padding:12px 0 !important;align-items:center !important;
+}
+.result-text{font-size:16px !important;color:#4f6179 !important;font-weight:700 !important}
+.result-text::first-line{color:var(--ink)}
+.result-box{height:66px !important;border:2px solid #5ca8e8 !important;border-radius:13px !important;font-size:31px !important;background:#f0f8ff !important}
+.calculation-info{font-size:13px !important;color:#61738a !important;padding:5px 0 11px;border-bottom:1px solid #e3eaf2}
+.grade-result{margin-top:13px !important;padding-top:13px !important}
+.grade-label{font-size:12px !important;letter-spacing:1.3px !important;color:#75849a !important}
+.grade-box{min-width:150px !important;height:58px !important;margin:8px 0 5px !important;border-radius:13px !important;font-size:28px !important}
+.matched-ratio{font-size:14px !important;color:#61738a !important}
+.bottom{padding:17px 14px !important}
+.title-with-icon{align-items:flex-start !important}
+.title-with-icon>span{width:27px;height:27px;flex:0 0 27px;font-size:15px}
+.ratio-title{font-size:15px !important;line-height:1.25 !important;text-align:left !important}
+.table-wrap{border:1px solid #cfdbe7 !important;border-radius:11px !important;margin-top:12px}
+.mix-table th{font-size:13px !important;padding:11px 7px !important;border-right:1px solid #fff !important}
+.mix-table td{font-size:14px !important;padding:10px 7px !important;border-top:1px solid #d6dee8 !important;border-right:1px solid #d6dee8 !important}
+.hint{font-size:12px !important;line-height:1.4 !important;margin-top:9px !important}
+.history-section{padding:14px !important}
+.history-tabs{border-bottom:1px solid #dbe4ed !important;margin-bottom:12px !important}
+.history-tab{padding:11px 7px !important;font-size:13px !important;border-radius:9px 9px 0 0 !important}
+.history-item{font-size:13px !important;border:1px solid #d5e0eb !important;border-radius:11px !important;background:#f8fbfe !important;padding:10px 11px !important}
+.history-btn{height:46px !important;font-size:14px !important;border-radius:10px !important}
+.excel-title{font-size:18px !important}.excel-description{font-size:13px !important}
+.app-credit{padding:18px 10px 26px !important;background:rgba(248,250,252,.82) !important;font-size:13px !important}
+.credit-logo{width:34px !important;height:34px !important}
+.credit-sub{font-size:10px !important}
+@media(max-width:480px){
+  .header{min-height:142px !important;padding:20px 16px 18px !important}
+  .brand-logo{width:44px !important;height:44px !important;flex-basis:44px !important}
+  .header-title{font-size:24px !important}
+  .header-subtitle{font-size:10px !important}
+  .header::after{left:16px;bottom:12px;font-size:8px}
+  .section{margin-left:9px !important;margin-right:9px !important;padding:15px 13px !important}
+  .site-row{grid-template-columns:.95fr 1.35fr !important}
+  .site-row label{font-size:14px !important}
+  .input,.unit-select{font-size:15px !important}
+  .materials{gap:6px !important}
+  .materials .mat{padding-left:4px;padding-right:4px}
+  .materials .mat h3{font-size:12px !important}
+  .result{grid-template-columns:1fr 104px !important}
+}
+
+
+/* Reset-counters toggle */
+.reset-setting{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:10px 0 14px;padding:10px 12px;
+  border:1px solid #d8e3ef;border-radius:14px;
+  background:rgba(248,251,255,.92);
+}
+.reset-setting-title{font-size:13px;font-weight:850;letter-spacing:.45px;color:#33445d;line-height:1.2}
+.toggle-switch{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;flex-shrink:0}
+.toggle-switch input{position:absolute;opacity:0;width:1px;height:1px}
+.toggle-track{width:50px;height:28px;border-radius:99px;background:#b9c6d4;position:relative;transition:.2s;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+.toggle-knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.2);transition:.2s}
+.toggle-switch input:checked + .toggle-track{background:linear-gradient(90deg,#1976d2,#6352e8)}
+.toggle-switch input:checked + .toggle-track .toggle-knob{transform:translateX(22px)}
+.toggle-text{min-width:28px;font-size:12px;font-weight:900;color:#5d6b7d;letter-spacing:.4px}
+.toggle-switch input:checked ~ .toggle-text{color:#4f45c8}
+@media(max-width:480px){.reset-setting{padding:9px 10px}.reset-setting-title{font-size:12px}.toggle-track{width:46px;height:26px}.toggle-knob{width:20px;height:20px}.toggle-switch input:checked + .toggle-track .toggle-knob{transform:translateX(20px)}}
 </style>
 
 <link rel="manifest" href="./manifest.webmanifest">
@@ -988,6 +1215,15 @@ body::after{
       <div class="cement-weight-unit">units</div>
     </div>
 
+    <div class="reset-setting">
+      <div class="reset-setting-title">RESET COUNTERS AFTER DETERMINE</div>
+      <label class="toggle-switch" aria-label="Reset counters after determine">
+        <input id="resetCountersToggle" type="checkbox" checked>
+        <span class="toggle-track"><span class="toggle-knob"></span></span>
+        <span id="resetToggleText" class="toggle-text">YES</span>
+      </label>
+    </div>
+
     <div class="section-icon-row"><span class="material-icon">▰</span>
 <div class="units-note">ENTER QUANTITIES IN UNITS</div></div>
     <div class="materials">
@@ -995,7 +1231,7 @@ body::after{
         <h3>CEMENT</h3>
         <div class="stepper">
           <div class="step minus" onclick="change('cement',-1)">−</div>
-          <div id="cement" class="step value">0</div>
+          <input id="cement" class="step value step-input" type="number" min="0" step="0.1" value="0" inputmode="decimal" onchange="setValue('cement',this.value)" oninput="setValue('cement',this.value)">
           <div class="step plus" onclick="change('cement',1)">+</div>
         </div>
       </div>
@@ -1003,7 +1239,7 @@ body::after{
         <h3>SAND</h3>
         <div class="stepper">
           <div class="step minus" onclick="change('sand',-1)">−</div>
-          <div id="sand" class="step value">0</div>
+          <input id="sand" class="step value step-input" type="number" min="0" step="0.1" value="0" inputmode="decimal" onchange="setValue('sand',this.value)" oninput="setValue('sand',this.value)">
           <div class="step plus" onclick="change('sand',1)">+</div>
         </div>
       </div>
@@ -1011,7 +1247,7 @@ body::after{
         <h3>AGG.</h3>
         <div class="stepper">
           <div class="step minus" onclick="change('agg',-1)">−</div>
-          <div id="agg" class="step value">0</div>
+          <input id="agg" class="step value step-input" type="number" min="0" step="0.1" value="0" inputmode="decimal" onchange="setValue('agg',this.value)" oninput="setValue('agg',this.value)">
           <div class="step plus" onclick="change('agg',1)">+</div>
         </div>
       </div>
@@ -1019,18 +1255,21 @@ body::after{
 
     <button class="determine" onclick="determine()">DETERMINE</button>
     
-    <div class="result-meter" aria-hidden="true">
-      <svg viewBox="0 0 250 62">
-        <path d="M28 50a97 97 0 0 1 194 0" fill="none" stroke="#e0e9f2" stroke-width="9" stroke-linecap="round"/>
-        <path d="M28 50a97 97 0 0 1 118-91" fill="none" stroke="url(#dashBlue)" stroke-width="9" stroke-linecap="round"/>
-        <circle cx="146" cy="16" r="7" fill="#7257e8"/>
-        <path d="M28 55h194" stroke="#cddbe9" stroke-width="2"/>
-        <text x="118" y="60" font-size="9" fill="#718198" font-weight="700">W / C</text>
-      </svg>
-    </div>
-<div class="result">
-      <div class="result-text">your concrete is<br>water/cement is</div>
-      <div id="result" class="result-box">0.00</div>
+    <div class="wc-chart-card">
+      <div class="wc-chart-head">
+        <span>WATER / CEMENT RATIO</span>
+        <strong id="result">0.00</strong>
+      </div>
+      <div class="wc-bar-wrap">
+        <div class="wc-bar-track">
+          <div id="wcBarFill" class="wc-bar-fill"></div>
+          <div id="wcMarker" class="wc-marker" title="Current W/C ratio"></div>
+        </div>
+        <div class="wc-ticks" aria-hidden="true">
+          <span>0</span><span>0.2</span><span>0.4</span><span>0.6</span><span>0.8</span><span>1.0</span>
+        </div>
+      </div>
+      <div class="wc-scale-note">Higher W/C → more water relative to cement</div>
     </div>
     <div id="calculationInfo" class="calculation-info">Water: 0 kg &nbsp; | &nbsp; Cement: 0 kg</div>
     <div class="grade-result">
@@ -1096,9 +1335,29 @@ body::after{
 <script>
 let values={cement:0,sand:0,agg:0};
 
+function updateResetToggleText(){
+  const cb=document.getElementById('resetCountersToggle');
+  const label=document.getElementById('resetToggleText');
+  if(cb && label) label.textContent=cb.checked?'YES':'NO';
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const cb=document.getElementById('resetCountersToggle');
+  if(cb) cb.addEventListener('change',updateResetToggleText);
+  updateResetToggleText();
+});
+
+function setValue(name,raw){
+  let n=parseFloat(raw);
+  if(!Number.isFinite(n) || n<0) n=0;
+  values[name]=Math.round(n*1000)/1000;
+  const el=document.getElementById(name);
+  if(el && document.activeElement!==el) el.value=values[name];
+}
 function change(name,delta){
-  values[name]=Math.max(0,values[name]+delta);
-  document.getElementById(name).textContent=values[name];
+  const next=Math.max(0,(Number(values[name])||0)+delta);
+  values[name]=Math.round(next*1000)/1000;
+  document.getElementById(name).value=values[name];
 }
 const nominalMixes = [
   {grade:'M25', ratio:[1,1,2], text:'1 : 1 : 2'},
@@ -1126,6 +1385,15 @@ function simplifiedRatio(arr){
   return '1 : ' + fmt(s) + ' : ' + fmt(a);
 }
 
+function updateWCChart(wc){
+  const safe = Number.isFinite(wc) && wc > 0 ? wc : 0;
+  const pct = Math.max(0, Math.min(1, safe)) * 100;
+  const fill = document.getElementById('wcBarFill');
+  const marker = document.getElementById('wcMarker');
+  if(fill) fill.style.width = pct + '%';
+  if(marker) marker.style.left = pct + '%';
+}
+
 function determine(){
   const enteredWater=parseFloat(document.getElementById('waterVolume').value)||0;
   const unit=document.getElementById('waterUnit').value;
@@ -1146,6 +1414,7 @@ function determine(){
 
   if(cement<=0){
     document.getElementById('result').textContent='0.00';
+    updateWCChart(0);
     document.getElementById('calculationInfo').textContent='Water: ' + waterKg.toFixed(2) + ' kg   |   Cement: 0.00 kg';
     document.getElementById('gradeResult').textContent='M —';
     document.getElementById('ratioResult').textContent='Ratio: —';
@@ -1154,6 +1423,7 @@ function determine(){
 
   const wc = cementKg > 0 ? waterKg/cementKg : 0;
   document.getElementById('result').textContent=wc.toFixed(2);
+  updateWCChart(wc);
   document.getElementById('calculationInfo').textContent =
     'Water: ' + waterKg.toFixed(2) + ' kg   |   Cement: ' + cementKg.toFixed(2) + ' kg';
 
@@ -1214,11 +1484,33 @@ function determine(){
     date:date,
     time:time,
     site:document.getElementById('siteInput').value.trim() || '—',
-    structuralPart:document.getElementById('partInput').value || '—',
+    structuralPart:document.getElementById('partInput').value.trim() || '—',
+    waterVolume:enteredWater,
+    waterUnit:unit,
+    waterKg:waterKg.toFixed(2),
+    cementUnits:values.cement,
+    sandUnits:values.sand,
+    aggregateUnits:values.agg,
+    cementKg:cementKg.toFixed(2),
+    unitsPerBag:unitsPerBag,
     mix:simplifiedRatio(entered),
     grade:displayedGrade,
     wc:wc.toFixed(2)
   });
+
+  // Ready for the next mix count only when the user has enabled the toggle.
+  // Site, structural part, water and result stay visible for reference.
+  const resetEnabled = document.getElementById('resetCountersToggle')?.checked ?? true;
+  if(resetEnabled) resetMaterialCounters();
+}
+
+function resetMaterialCounters(){
+  values.cement=0;
+  values.sand=0;
+  values.agg=0;
+  document.getElementById('cement').value='0';
+  document.getElementById('sand').value='0';
+  document.getElementById('agg').value='0';
 }
 
 const HISTORY_KEY='concreteMixHistory';
@@ -1259,29 +1551,51 @@ function clearHistory(){
   if(confirm('Clear all saved mix history?')){localStorage.removeItem(HISTORY_KEY);renderHistory();}
 }
 function escapeXml(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');}
+function csvCell(value){
+  return '"'+String(value ?? '').replace(/"/g,'""')+'"';
+}
 function exportExcel(){
   const list=loadHistory();
-  if(!list.length){alert('No mix records to export. Press DETERMINE first.');return;}
-  const rows=list.map(r=>`<Row>
-    <Cell><Data ss:Type="String">${escapeXml(r.date)}</Data></Cell>
-    <Cell><Data ss:Type="String">${escapeXml(r.time)}</Data></Cell>
-    <Cell><Data ss:Type="String">${escapeXml(r.site)}</Data></Cell>
-    <Cell><Data ss:Type="String">${escapeXml(r.structuralPart)}</Data></Cell>
-    <Cell><Data ss:Type="String">${escapeXml(r.mix)}</Data></Cell>
-    <Cell><Data ss:Type="String">${escapeXml(r.grade)}</Data></Cell>
-    <Cell><Data ss:Type="Number">${Number(r.wc)||0}</Data></Cell>
-  </Row>`).join('');
-  const xml=`<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?>
-<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
-<Worksheet ss:Name="Mix History"><Table>
-<Row><Cell><Data ss:Type="String">Date</Data></Cell><Cell><Data ss:Type="String">Time</Data></Cell><Cell><Data ss:Type="String">Site of Work</Data></Cell><Cell><Data ss:Type="String">Structural Part</Data></Cell><Cell><Data ss:Type="String">Mix Used</Data></Cell><Cell><Data ss:Type="String">Concrete Grade</Data></Cell><Cell><Data ss:Type="String">Water/Cement Ratio</Data></Cell></Row>${rows}
-</Table></Worksheet></Workbook>`;
-  const blob=new Blob([xml],{type:'application/vnd.ms-excel'});
-  const url=URL.createObjectURL(blob); const a=document.createElement('a');
-  a.href=url;a.download='concrete_mix_history.xls';document.body.appendChild(a);a.click();a.remove();
+  if(!list.length){
+    alert('No mix records to export. Press DETERMINE first.');
+    return;
+  }
+
+  // CSV is deliberately used instead of the old fake .xls/SpreadsheetML file.
+  // Android spreadsheet apps reliably open UTF-8 CSV files, while many mobile
+  // spreadsheet viewers reject browser-generated SpreadsheetML files as corrupt.
+  const headers=[
+    'Date','Time','Site of Work','Structural Part',
+    'Water Volume','Water Unit','Water (kg)',
+    'Cement (units)','Sand (units)','Aggregate (units)',
+    'Cement (kg)','Units per Cement Bag','Mix Used',
+    'Concrete Grade','Water/Cement Ratio'
+  ];
+  const lines=[headers.map(csvCell).join(',')];
+  list.forEach(r=>{
+    lines.push([
+      r.date, r.time, r.site || '—', r.structuralPart || '—',
+      r.waterVolume ?? '', r.waterUnit || '', r.waterKg ?? '',
+      r.cementUnits ?? '', r.sandUnits ?? '', r.aggregateUnits ?? '',
+      r.cementKg ?? '', r.unitsPerBag ?? '', r.mix || '—',
+      r.grade || '—', r.wc ?? ''
+    ].map(csvCell).join(','));
+  });
+
+  // Real UTF-8 BOM (not the literal text "\uFEFF") for Excel/Sheets.
+  const csv=lines.join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='concrete_mix_history.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 renderHistory();
+updateWCChart(0);
 </script>
 
 <script>
